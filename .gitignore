@@ -1,0 +1,44 @@
+# Ignore build output folders
+bin/
+obj/
+
+# Ignore NuGet package restore files
+*.nuget.props
+*.nuget.targets
+
+# Ignore Visual Studio files
+.vs/
+*.suo
+*.user
+*.userprefs
+*.vscode
+
+# Ignore build artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+*.zip
+
+# Ignore NuGet packages
+*.nupkg
+
+# Ignore Resharper files
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+
+# Ignore test results
+TestResults/
+
+# Ignore publish profiles
+*.pubxml
+
+# Ignore Azure build pipeline files
+azure-pipelines.yml
+azure-pipelines-*.yml
+
+# Ignore local development files
+launchSettings.json
+appsettings.Development.json
