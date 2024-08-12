@@ -167,6 +167,11 @@ public class UpdateGenreTest
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(exampleGenre);
         
+        categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
+            It.IsAny<List<Guid>>(),
+            It.IsAny<CancellationToken>()
+        )).ReturnsAsync(exampleCategoryIds);
+        
         var useCase = new Catalog.Application.UseCases.Genre.UpdateGenre.UpdateGenre(
             categoryRepositoryMock.Object, 
             genreRepositoryMock.Object,
@@ -212,6 +217,11 @@ public class UpdateGenreTest
             It.Is<Guid>(x => x == exampleGenre.Id),
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(exampleGenre);
+        
+        categoryRepositoryMock.Setup(x => x.GetIdsListByIds(
+            It.IsAny<List<Guid>>(),
+            It.IsAny<CancellationToken>()
+        )).ReturnsAsync(newCategoryIds);
         
         var useCase = new Catalog.Application.UseCases.Genre.UpdateGenre.UpdateGenre(
             categoryRepositoryMock.Object, 
