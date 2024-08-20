@@ -1,5 +1,6 @@
 using FC.Codeflix.Catalog.Application.Exceptions;
 using FC.Codeflix.Catalog.Application.UseCases.Category.ListCategories;
+using FC.Codeflix.Catalog.Domain.Entity;
 using FC.Codeflix.Catalog.Domain.SeedWork.SearchableRepository;
 using FluentAssertions;
 using Xunit;
@@ -328,6 +329,40 @@ public class CategoryRepositoryTest
             outputItem.Description.Should().Be(expectedItem.Description);
             outputItem.CreatedAt.Should().Be(expectedItem.CreatedAt);
             outputItem.IsActive.Should().Be(expectedItem.IsActive);
+        }
+    }
+    
+    [Fact(DisplayName = nameof(ListByIds))]
+    [Trait("Integration/Infra.Data", "CategoryRepository - Repositories")]
+    public async Task ListByIds()
+    {
+        var dbContext = _fixture.CreateDbContext();
+        var exampleCategorisList = _fixture.GetExampleCategoriesList(15);
+        List<Guid> categoryIdsToGet = Enumerable.Range(1, 3).Select(_ =>
+        {
+            int indexToGet = (new Random()).Next(0, exampleCategorisList.Count - 1);
+            return exampleCategorisList[indexToGet]!.Id;
+        }).Distinct().ToList();
+        await dbContext.AddRangeAsync(exampleCategorisList!);
+        await dbContext.SaveChangesAsync(CancellationToken.None);
+        
+        var categoryRepository = new Catalog.Infra.Data.EF.Repositories
+            .CategoryRepository(dbContext);
+
+        IReadOnlyList<Category> categoriesListOutput = await categoryRepository.ListByIds(categoryIdsToGet, CancellationToken.None);
+
+
+        categoryIdsToGet.Should().NotBeNull();
+        categoryIdsToGet.Should().HaveCount(categoriesListOutput.Count);
+
+        foreach (var outputItem in categoriesListOutput)
+        {
+            var exampleItem = exampleCategorisList.Find(category => category!.Id == outputItem.Id);
+            exampleItem.Should().NotBeNull();
+            outputItem.Name.Should().Be(exampleItem!.Name);
+            outputItem.Description.Should().Be(exampleItem.Description);
+            outputItem.IsActive.Should().Be(exampleItem.IsActive);
+            outputItem.CreatedAt.Should().Be(exampleItem.CreatedAt);
         }
     }
 

@@ -44,11 +44,11 @@ public class CategoryRepository : ICategoryRepository
         {
             query = query.Where(x => x.Name.Contains(input.Search));
         }
-        var total = await query.CountAsync();
+        var total = await query.CountAsync(cancellationToken);
         var items = await query
                 .AsNoTracking()
                 .Skip(toSkip)
-                .Take(input.PerPage).ToListAsync();
+                .Take(input.PerPage).ToListAsync(cancellationToken);
 
         return new SearchOutput<Category>(input.Page, input.PerPage, total, items);
     }
@@ -64,7 +64,7 @@ public class CategoryRepository : ICategoryRepository
     public async Task<IReadOnlyList<Category>> GetListByIds(List<Guid> ids, CancellationToken cancellationToken)
         => await _categories.AsNoTracking()
             .Where(category => ids.Contains(category.Id))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     
     
     private IQueryable<Category> AddOrderToQuery(
@@ -84,5 +84,10 @@ public class CategoryRepository : ICategoryRepository
         };
 
         return orderedQuery.ThenBy(x => x.CreatedAt);
+    }
+
+    public async Task<IReadOnlyList<Category>> ListByIds(List<Guid> categoryIdsToGet, CancellationToken cancellationToken)
+    {
+        return await _categories.AsNoTracking().Where(category => categoryIdsToGet.Contains(category.Id)).ToListAsync(cancellationToken);
     }
 }
