@@ -26,4 +26,9 @@ public class GenrePersistence
         await _context.GenresCategories.AddRangeAsync(genresCategoriesList);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<GenresCategories>> GetGenresCategoriesRelationsByGenreId(Guid id)
+    {
+        return await _context.GenresCategories.AsNoTracking().Where(relation => relation.GenreId == id).ToListAsync();
+    }
 }
