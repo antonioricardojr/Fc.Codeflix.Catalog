@@ -8,7 +8,9 @@ public static class ControllersConfiguration
     public static IServiceCollection AddAndConfigureControllers(this IServiceCollection services)
     {
         services
-            .AddControllers(options => options.Filters.Add(typeof(ApiGlobalExceptionFilter)))
+            .AddControllers(options 
+                => options.Filters.Add(typeof(ApiGlobalExceptionFilter))
+            )
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCasePolicy();

@@ -56,17 +56,17 @@ public class CreateGenreTest
     public async Task CreateGenreWithCategoriesRelations()
     {
         List<Domain.Entity.Category> categories = _fixture.GetExampleCategoriesList(5);
-        CodeflixCatalogDbContext arrangeDbContext = _fixture.CreateDbContext();
-        await arrangeDbContext.Categories.AddRangeAsync(categories);
-        await arrangeDbContext.SaveChangesAsync();
+        CodeflixCatalogDbContext dbContext = _fixture.CreateDbContext();
+        
+        await dbContext.Categories.AddRangeAsync(categories);
+        await dbContext.SaveChangesAsync();
         
         
         CreateGenreInput input = _fixture.GetExampleInput();
         input.CategoryIds = categories.Select(c => c.Id).ToList();
-        CodeflixCatalogDbContext actDbContext = _fixture.CreateDbContext();
-        GenreRepository genreRepository = new GenreRepository(actDbContext);
-        IUnitOfWork unitOfWork = new UnitOfWork(actDbContext);
-        CategoryRepository categoryRepository = new CategoryRepository(actDbContext);
+        GenreRepository genreRepository = new GenreRepository(dbContext);
+        IUnitOfWork unitOfWork = new UnitOfWork(dbContext);
+        CategoryRepository categoryRepository = new CategoryRepository(dbContext);
         var useCase = new Catalog.Application.UseCases.Genre.CreateGenre.CreateGenre(genreRepository, unitOfWork, categoryRepository);
 
         GenreModelOutput output = await useCase.Handle(input, CancellationToken.None);

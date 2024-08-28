@@ -36,6 +36,12 @@ public class ApiGlobalExceptionFilter : IExceptionFilter
             details.Status = (int) StatusCodes.Status404NotFound;
             details.Detail = exception.Message;
             details.Type = "NotFound";
+        } else if (exception is RelatedAggregateException)
+        {
+            details.Title = "Invalid Related Aggregate";
+            details.Status = (int) StatusCodes.Status422UnprocessableEntity;
+            details.Detail = exception.Message;
+            details.Type = "RelatedAggregate";
         }
         else
         {
