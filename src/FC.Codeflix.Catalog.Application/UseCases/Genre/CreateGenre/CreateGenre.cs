@@ -24,7 +24,7 @@ public class CreateGenre : ICreateGenre
 
         if ((request.CategoryIds?.Count ?? 0) > 0)
         {
-            ValidateCategoryIds(request, cancellationToken);
+            await ValidateCategoryIds(request, cancellationToken);
             request.CategoryIds?.ForEach(categoryId => genre.AddCategory(categoryId));
         }        
         await _genreRepository.Insert(genre, cancellationToken);
@@ -33,13 +33,24 @@ public class CreateGenre : ICreateGenre
         return GenreModelOutput.FromGenre(genre);
     }
 
-    private async void ValidateCategoryIds(CreateGenreInput request, CancellationToken cancellationToken)
+    private async Task ValidateCategoryIds(
+        CreateGenreInput request,
+        CancellationToken cancellationToken
+    )
     {
-        var idsInPersistence = await _categoryRepository.GetIdsListByIds(request.CategoryIds!, cancellationToken);
+        var idsInPersistence = await _categoryRepository
+            .GetIdsListByIds(
+                request.CategoryIds!,
+                cancellationToken
+            );
         if (idsInPersistence.Count < request.CategoryIds!.Count)
         {
-            var notFoundIds = request.CategoryIds.FindAll(x => !idsInPersistence.Contains(x));
-            throw new RelatedAggregateException($"Related Category id(s) not found: {String.Join(",", notFoundIds)}");
+            var notFoundIds = request.CategoryIds
+                .FindAll(x => !idsInPersistence.Contains(x));
+            var notFoundIdsAsString = String.Join(", ", notFoundIds);
+            throw new RelatedAggregateException(
+                $"Related category id (or ids) not found: {notFoundIdsAsString}"
+            );
         }
     }
 }
